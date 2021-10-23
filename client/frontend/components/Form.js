@@ -108,8 +108,6 @@ function Dropdown({ dropdownItems, placeholder }) {
                                     key={item.slug}
                                     // slug={item.slug}
                                     onClick={() => {
-                                        console.log('test');
-                                        console.log(item);
                                         setSelected(item);
                                         setInputValue(item.name);
                                     }}

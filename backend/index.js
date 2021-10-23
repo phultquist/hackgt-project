@@ -1,21 +1,68 @@
-import Express, { response } from "express";
+import express from 'express';
+import request from 'request-promise';
+import moment from 'moment-timezone'
+import getAccessKey from './auth.js';
 
-const app = Express();
+const app = express();
 
 //getting locations of all products in catalog
-app.post("/locations", (req, res) => {
-    const { body } = req;
-    let locationList = [{
-        locationId: "1234567", //linked list, call all locations and catalogid, could be dumb
-        catalogId: "1234567"
-    },
-    {
-        locationId: "1234567",
-        catalogId: "1234567"
-    }];
+const dateString = () => {
+    return moment().tz("GMT").format("ddd, D MMM YYYY HH:mm:ss z");
+}
+
+app.get("/locations", async (req, res) => {
+
+    const path = '/site/sites/find-by-criteria';
+
+    var options = {
+        'method': 'POST',
+        'url': 'https://api.ncr.com' + path,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Authorization': getAccessKey(path, 'POST'),
+            'nep-organization': 'test-drive-890477f1b75e491b910d3',
+            'Date': dateString()
+        },
+        body: JSON.stringify({
+            "criteria": {
+                "status": "ACTIVE"
+            }
+        })
+    };
+
+    try {
+        var result = await request(options);
+
+        const sitesBasic = JSON.parse(result).pageContent;
+        var sites = await Promise.all(
+            sitesBasic.map(async site => {
+                const siteId = site.id;
+                const path = '/site/sites/' + siteId;
+
+                var options = {
+                    'method': 'GET',
+                    'url': 'https://api.ncr.com' + path,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Authorization': getAccessKey(path, 'GET'),
+                        'nep-organization': 'test-drive-890477f1b75e491b910d3',
+                        'Date': dateString()
+                    },
+                }
+
+                var siteInfo = await request(options);
+                return JSON.parse(siteInfo);
+                // console.log(siteInfo);
+                // res.status(200).json(siteInfo);
+            }
+            )
+        );
+        res.status(200).json(sites);
+    } catch (e) {
+        throw new Error(e);
+    }
 
     //returning locationId and catalogId
-    res.status(200).json(locationList);
 })
 
 //submits proble
@@ -37,7 +84,7 @@ app.post("/problem", (req, res) => {
 app.post("/history", (req, res) => {
     const { body } = req;
     let historyList = [{
-        problem = "problems with product",
+        problem: "problems with product",
         locationId: "1234567",
         catalogId: "1234567",
         itemId: "1234567",
@@ -50,5 +97,4 @@ app.post("/history", (req, res) => {
     res.status(200).json(historyList);
 })
 
-
-
+app.listen(5000)
