@@ -3,19 +3,6 @@ import Head from 'next/head'
 import Image from 'next/image'
 
 export default function Form({ onSubmit, stores, products}) {
-    const dropdownItems = [
-        {
-            name: 'Item 1',
-            slug: 'item-1',
-            address: '517 Hawthorne Ave Bartlett IL'
-        },
-        {
-            name: 'Item 2',
-            slug: 'item-2',
-            address: '517 Hawthorne Ave Bartlett IL'
-        }
-    ];
-
     const [description, setDescription] = useState("");
     const [email, setEmail] = useState("");
 
@@ -23,12 +10,20 @@ export default function Form({ onSubmit, stores, products}) {
         <div className='pb-10'>
             <form>
                 <Input name='Store Location' description='Search by Address or ID'>
-                    <Dropdown dropdownItems={dropdownItems} placeholder='Select a store...' />
+                    <Dropdown dropdownItems={stores.map(store => {
+                        const { street, city, state, postalCode } = store.address;
+                        return {
+                            name: store.siteName,
+                            secondary: `${street} ${city}, ${state} ${postalCode}`,
+                            slug: store.id
+                        }
+                    })} placeholder='Select a store...' />
                 </Input>
                 <Input name='Product Affected' description='Search by Name or ID'>
-                    <Dropdown dropdownItems={dropdownItems.map(item => {
+                    <Dropdown dropdownItems={products.map(item => {
                         return {
-                            ...item, secondary: item.address
+                            ...item,
+                            secondary: item.slug
                         }
                     })} placeholder='Select an item...' />
                 </Input>

@@ -11,7 +11,6 @@ const dateString = () => {
 }
 
 app.get("/locations", async (req, res) => {
-
     const path = '/site/sites/find-by-criteria';
 
     var options = {
@@ -52,36 +51,70 @@ app.get("/locations", async (req, res) => {
 
                 var siteInfo = await request(options);
                 return JSON.parse(siteInfo);
-                // console.log(siteInfo);
-                // res.status(200).json(siteInfo);
-            }
-            )
+            })
         );
         res.status(200).json(sites);
     } catch (e) {
+        res.status(500).send("error")
+        throw new Error(e);
+    }
+});
+
+app.get("/catalog", async (req, res) => {
+    const path = '/catalog/items/';
+
+    var options = {
+        'method': 'GET',
+        'url': 'https://api.ncr.com' + path,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Authorization': getAccessKey(path, 'GET'),
+            'nep-organization': 'test-drive-890477f1b75e491b910d3',
+            'Date': dateString()
+        },
+    };
+
+    try {
+        const result = JSON.parse(await request(options)).pageContent;
+        const catalog = result.map(item => {
+            return {
+                name: item.shortDescription.value,
+                slug: item.itemId.itemCode
+            }
+        })
+
+        res.status(200).send(catalog)
+    } catch (e) {
+        res.status(500).send("error")
         throw new Error(e);
     }
 
-    //returning locationId and catalogId
-})
+});
 
-//submits proble
+//submits problem
 app.post("/problem", (req, res) => {
     const { body } = req;
-    let problem = {
-        email: "something@example.com",
-        locationId: "1234567",
-        itemId: "123456",
-        description: "236546"
-    }
     //submits problem to NCR API
+    const { storeId, productId, description, email } = body;
+    const time = new Date();
 
-    //submit request to NCR APi
+    const path = '/'
+
+    var options = {
+        'method': 'GET',
+        'url': 'https://api.ncr.com' + path,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Authorization': getAccessKey(path, 'GET'),
+            'nep-organization': 'test-drive-890477f1b75e491b910d3',
+            'Date': dateString()
+        },
+    };
 
     res.status(200).send("success");
 });
 
-app.post("/history", (req, res) => {
+app.get("/history", async (req, res) => {
     const { body } = req;
     let historyList = [{
         problem: "problems with product",
@@ -90,6 +123,19 @@ app.post("/history", (req, res) => {
         itemId: "1234567",
         description: "1234567"
     }]
+
+    const path = '/items'
+    var options = {
+        'method': 'GET',
+        'url': 'https://api.ncr.com' + path,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Authorization': getAccessKey(path, 'GET'),
+            'nep-organization': 'test-drive-890477f1b75e491b910d3',
+            'Date': dateString()
+        },
+    }
+    const result = await request(options)
     //submits history of problem to NCR API
 
     //submit request to NCR API
