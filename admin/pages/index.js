@@ -12,7 +12,8 @@ export default function Home() {
       </Head>
 
       <main className="">
-        <h1 className='text-3xl bg-red-700'>Good Days Cafe</h1>
+        <br /> <br />
+        <h1 className='text-3xl bg-red-700'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Good Days Cafe</h1>
         <div className='flex flex-row'>
           <div className=''>
             <SideBar />
