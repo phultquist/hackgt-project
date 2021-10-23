@@ -18,6 +18,7 @@ export default function Home({ stores, catalog }) {
           stores={stores}
           products={catalog}
           onSubmit={async (data) => {
+            console.log("hellO!");
             console.log(data);
             try {
               const res = await fetch(

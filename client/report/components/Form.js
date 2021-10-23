@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Head from 'next/head'
-import Image from 'next/image'
 import Link from 'next/Link'
 
 export default function Form({ onSubmit, stores, products }) {
@@ -77,13 +75,11 @@ export default function Form({ onSubmit, stores, products }) {
                         />
                     </div>
                 </Input>
-                <Link href ="/thanks">
                 <input
                     type="submit"
                     className='w-full bg-black text-white mt-6 p-3 py-4 rounded-md cursor-pointer font-semibold'
                     value="Report to Good Day Vending"
                 />
-                </Link>
             </form>
         </div>
     )

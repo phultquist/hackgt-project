@@ -1,6 +1,5 @@
 import Head from 'next/head'
 
-
 export default function PageWithHeader({ children }) {
     return (
         <div className="">

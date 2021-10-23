@@ -1,5 +1,5 @@
 {
-  "name": "hackgt-project",
+  "name": "report",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "11.1.2",
+    "next": "^11.1.2",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
