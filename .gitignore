@@ -13,6 +13,7 @@ node_modules
 
 # next.js
 /.next/
+client/frontend/.next/**
 /out/
 
 # production
