@@ -13,7 +13,7 @@ export default function Home() {
 
       <main className="">
         <br /> <br />
-        <h1 className='text-3xl bg-red-700'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Good Days Cafe</h1>
+        <h1 className='text-3xl text-bold'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Good Days Cafe</h1>
         <div className='flex flex-row'>
           <div className=''>
             <SideBar />

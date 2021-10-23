@@ -3,6 +3,10 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/report": "pages/report.js",
+<<<<<<< HEAD
   "/next/dist/pages/_error": "pages/next/dist/pages/_error.js",
   "/": "pages/index.js"
+=======
+  "/thanks": "pages/thanks.js"
+>>>>>>> f10c1d6b046ebf2567279730ea442998a959024f
 }

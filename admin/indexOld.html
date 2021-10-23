@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Add Map</title>
+
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <script src="./index.js"></script>
+    <style> 
+    #map{
+        height: 400px;
+        width: 70;
+    }
+    </style>
+  </head>
+  <body>
+    <h3>My Google Maps Demo</h3>
+    <!--The div element for the map -->
+    <div id="map"></div>
+
+    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+    <script> 
+    function initMap(){
+        var options = {
+            zoom:8,
+            center: { lat: -25.344, lng: 131.036 }
+        }
+        var map = new google.maps.Map(document.getElementById('map'), options);
+        // var marker = new google.maps.Marker({
+        //     poistion: {lat: -25.344, lng: 131.036 },
+        //     map: map,
+        //     icon: ''
+        // });
+        // var infoWindow = new google.maps.InfoWindow({
+        //     content: '<h1> ATL </h1>'
+        // });
+        // marker.addListener('click', function() {
+        //     infoWindow.open(map, marker)
+        // })
+
+        var markers = [
+            {
+            coords: {lat: -25.344, lng: 131.036},
+            content: <h3> atl</h3>
+            },
+            {
+            coords: {lat: 25.344, lng: -131.036},
+            content: <h3> lta</h3> 
+            }
+        ];
+        for(vari = 0; i < markers.length; i++) {
+            addMarker(markers[i])
+        }
+        function addMarker(props) {
+            var marker = new google.maps.Marker({
+            poistion: props.coords,
+            map: map,
+            });
+            var infoWindow = new google.maps.InfoWindow({
+            content: props.content
+            });
+            marker.addListener('click', function() {
+            infoWindow.open(map, marker)
+            });
+        }
+    }
+    </script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-Z762mM-Ev_iF9LwZ3b58NnRy0UgnMO8&callback=initMap&libraries=&v=weekly"
+      async
+    ></script>
+  </body>
+</html>
