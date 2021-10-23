@@ -1,6 +1,6 @@
 const SideBar = () => {
     return (
-        <div class="flex h-screen overflow-hidden bg-white rounded-lg">
+        <div class="flex h-screen overflow-hidden w-full bg-red-100 rounded-lg">
    <div class="hidden md:flex md:flex-shrink-0">
       <div class="flex flex-col w-64">
          <div class="
@@ -196,7 +196,7 @@ const SideBar = () => {
          </div>
       </div>
    </div>
-   <div class="flex flex-col flex-1 w-0 overflow-hidden">
+   {/* <div class="flex flex-col flex-1 w-0 overflow-hidden">
       <main class="relative flex-1 overflow-y-auto focus:outline-none">
          <div class="py-6">
             <div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
@@ -209,7 +209,7 @@ const SideBar = () => {
             </div>
          </div>
       </main>
-   </div>
+   </div> */}
 </div>
     );
 };

@@ -14,10 +14,10 @@ export default function Home() {
       <main className="">
         <h1 className='text-3xl bg-red-700'>Good Days Cafe</h1>
         <div className='flex flex-row'>
-          <div className='w-1/3'>
+          <div className=''>
             <SideBar />
           </div>
-          <div className='w-2/3'>
+          <div className=''>
           </div>
         </div>
       </main>
