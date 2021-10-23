@@ -8,7 +8,6 @@ const bspOrganization = 'test-drive-890477f1b75e491b910d3';
 const bspSecretKey = process.env.BSP_SECRET_KEY;
 
 const signableContent = function(path, method) {
-    console.log(path, method);
     const params = [
         method,
         path,
