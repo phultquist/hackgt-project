@@ -10,7 +10,7 @@ const dateString = () => {
     return moment().tz("GMT").format("ddd, D MMM YYYY HH:mm:ss z");
 }
 
-app.get("/locations", (req, res) => {
+app.get("/locations", async (req, res) => {
 
     const path = '/site/sites/find-by-criteria';
 
@@ -30,28 +30,37 @@ app.get("/locations", (req, res) => {
         })
     };
 
-    request(options, async function (error, response) {
-        if (error) throw new Error(error);
-        const sites = JSON.parse(response.body).pageContent;
-        // get info about each site
-        await sites.map(async site => {
-            const siteId = site.id;
-            const path = '/site/sites/' + siteId;
-            var options = {
-                'method': 'GET',
-                'url': 'https://api.ncr.com' + path,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Authorization': getAccessKey(path, 'GET'),
-                    'nep-organization': 'test-drive-890477f1b75e491b910d3',
-                    'Date': dateString()
-                },
+    try {
+        var result = await request(options);
+
+        const sitesBasic = JSON.parse(result).pageContent;
+        var sites = await Promise.all(
+            sitesBasic.map(async site => {
+                const siteId = site.id;
+                const path = '/site/sites/' + siteId;
+
+                var options = {
+                    'method': 'GET',
+                    'url': 'https://api.ncr.com' + path,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Authorization': getAccessKey(path, 'GET'),
+                        'nep-organization': 'test-drive-890477f1b75e491b910d3',
+                        'Date': dateString()
+                    },
+                }
+
+                var siteInfo = await request(options);
+                return JSON.parse(siteInfo);
+                // console.log(siteInfo);
+                // res.status(200).json(siteInfo);
             }
-
-
-        })
+            )
+        );
         res.status(200).json(sites);
-    });
+    } catch (e) {
+        throw new Error(e);
+    }
 
     //returning locationId and catalogId
 })
