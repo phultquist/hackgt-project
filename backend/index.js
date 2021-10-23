@@ -1,22 +1,27 @@
 import express from 'express';
-import request from 'request';
+import request from 'request-promise';
 import moment from 'moment-timezone'
+import getAccessKey from './auth.js';
 
 const app = express();
 
 //getting locations of all products in catalog
+const dateString = () => {
+    return moment().tz("GMT").format("ddd, D MMM YYYY HH:mm:ss z");
+}
+
 app.get("/locations", (req, res) => {
 
-    const dateString = moment().tz("GMT").format("ddd, D MMM YYYY HH:mm:ss z")
-    console.log(dateString);
+    const path = '/site/sites/find-by-criteria';
+
     var options = {
         'method': 'POST',
-        'url': 'https://api.ncr.com/site/sites/find-by-criteria',
+        'url': 'https://api.ncr.com' + path,
         'headers': {
             'Content-Type': 'application/json',
-            'Authorization': 'AccessKey 2e1f6f77e9674006838270fcb95477f7:jn7BLTJE3KLaIw8v3p+ubN7V8/ZMdU8rIolwCi6B2RSafzkOO9Or1eZGPV6m5B74jTwt443/jHM+q2mg+BF0OA==',
+            'Authorization': getAccessKey(path, 'POST'),
             'nep-organization': 'test-drive-890477f1b75e491b910d3',
-            'Date': dateString
+            'Date': dateString()
         },
         body: JSON.stringify({
             "criteria": {
@@ -25,10 +30,27 @@ app.get("/locations", (req, res) => {
         })
     };
 
-    request(options, function (error, response) {
+    request(options, async function (error, response) {
         if (error) throw new Error(error);
-        console.log(response.body);
-        res.status(200).send(response.body);
+        const sites = JSON.parse(response.body).pageContent;
+        // get info about each site
+        await sites.map(async site => {
+            const siteId = site.id;
+            const path = '/site/sites/' + siteId;
+            var options = {
+                'method': 'GET',
+                'url': 'https://api.ncr.com' + path,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Authorization': getAccessKey(path, 'GET'),
+                    'nep-organization': 'test-drive-890477f1b75e491b910d3',
+                    'Date': dateString()
+                },
+            }
+
+
+        })
+        res.status(200).json(sites);
     });
 
     //returning locationId and catalogId
