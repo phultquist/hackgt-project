@@ -9,9 +9,10 @@ export default function Home() {
           Good Day Vending
         </h1>
         <p>
-          We’re sorry to hear something went wrong. Help us fix it by filing a report.
+        Thank you for reporting this issue. If you provided your email, we will reach out to you soon to help refund your order. The site should be fixed soon. 
+        <br /><br />
+        If you have any other questions, please contact <a className='hover:underline' href='mailto:support@gdvending.com'>support@gdvending.com</a>.
         </p>
-        <Form />
       </div>
     </PageWithHeader>
   )

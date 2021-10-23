@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head'
 import Image from 'next/image'
 
-export default function Form() {
+export default function Form({ onSubmit, stores, products}) {
     const dropdownItems = [
         {
             name: 'Item 1',
@@ -56,7 +56,7 @@ export default function Form() {
                         />
                     </div>
                 </Input>
-                <input 
+                <input
                     type="submit"
                     className='w-full bg-black text-white mt-6 p-3 py-4 rounded-md cursor-pointer font-semibold'
                     value="Report to Good Day Vending"
