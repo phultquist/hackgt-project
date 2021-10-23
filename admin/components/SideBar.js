@@ -1,3 +1,4 @@
+import Map from '../components/Map'
 const SideBar = () => {
     return (
         <div class="flex h-screen overflow-hidden bg-white rounded-lg">
@@ -195,12 +196,22 @@ const SideBar = () => {
                     </div>
                 </a>
             </div>
+<<<<<<< HEAD
+         </div>
+      </div>
+   </div>
+   
+   {/* <div class="flex flex-col flex-1 w-0 overflow-hidden">
+      <main class="relative flex-1 overflow-y-auto focus:outline-none">
+         <div class="py-6">
+=======
             </div>
         </div>
     </div>
     {/* <div class="flex flex-col flex-1 w-0 overflow-hidden">
         <main class="relative flex-1 overflow-y-auto focus:outline-none">
             <div class="py-6">
+>>>>>>> 7e30a851e98f85b384125f4fadd9f8b96fd8bd9d
             <div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
                 <h1 class="text-lg text-neutral-600"> Here is where you put your stuff </h1>
             </div>
