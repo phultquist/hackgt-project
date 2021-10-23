@@ -104,7 +104,6 @@ app.get("/catalog", async (req, res) => {
 //submits problem
 app.post("/problem", async (req, res) => {
     //submits problem to NCR API
-
     const { storeId, productId, description, email } = req.body;
 
     // first, we need to get the product so we can check the version.
