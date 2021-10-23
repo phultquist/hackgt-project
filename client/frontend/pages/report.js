@@ -30,7 +30,7 @@ export default function Home({ stores, catalog }) {
                   method: 'POST'
                 }
               )
-              router.push('/thanks')
+              router.push('/thanks');
             } catch(e) {
               console.log(e);
               alert("Something went wrong")
