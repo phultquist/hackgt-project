@@ -3,6 +3,7 @@ import request from 'request-promise';
 import moment from 'moment-timezone'
 import getAccessKey from './auth.js';
 
+
 const app = express();
 
 let allowCrossDomain = function (req, res, next) {
@@ -180,6 +181,40 @@ app.post("/problem", async (req, res) => {
         const putResponse = await request(options);
 
         res.status(200).send("success");
+
+        // const active = res.param.active
+
+        // emailjs.sendForm('gmail', 'template_kr28u7o', e.target, 'user_pfwlAKw00L6NSkcO220ui')
+        //     .then((result) => {
+        //         console.log(result.text);
+        //     }, (error) => {
+        //         console.log(error.text);
+        //     });
+        var nodemailer = require('nodemailer');
+
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'hackgtncr@gmail.com',
+              pass: 'hackathontechncr'
+            }
+          });
+          
+          var mailOptions = {
+            from: 'hackgtncr@gmail.com',
+            to: 'hackgtncr@gmail.com',
+            subject: 'Sending Email using Node.js',
+            text: 'There is an issue with one of your vending machines. Please send people to look over.'
+          };
+          
+          transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+
     } catch (e) {
         console.log(e);
         res.status(500).send(e)
@@ -269,7 +304,7 @@ app.get("/history", async (req, res) => {
         })
     );
 
-    res.status(200).json(problemHistory.sort((a,b) => {
+    res.status(200).json(problemHistory.sort((a, b) => {
         return new Date(a).getTime() - new Date(b).getTime();
     }));
 })
