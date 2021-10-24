@@ -8,7 +8,7 @@ const app = express();
 let allowCrossDomain = function (req, res, next) {
     res.header('Access-Control-Allow-Origin', "*");
     res.header('Access-Control-Allow-Headers', "*");
-    res.header('Access-Control-Allow-Methods', "POST");
+    res.header('Access-Control-Allow-Methods', "*");
     next();
 }
 
@@ -71,6 +71,22 @@ app.get("/locations", async (req, res) => {
 });
 
 app.get("/catalog", async (req, res) => {
+    try {
+        const catalog = await getCatalogItems();
+        res.status(200).send(catalog.map(item => {
+            return {
+                name: item.shortDescription.value,
+                slug: item.itemId.itemCode
+            }
+        }));
+    } catch (e) {
+        res.status(500).send("error")
+        throw new Error(e);
+    }
+
+});
+
+const getCatalogItems = async () => {
     const path = '/catalog/items/';
 
     var options = {
@@ -84,22 +100,9 @@ app.get("/catalog", async (req, res) => {
         },
     };
 
-    try {
-        const result = JSON.parse(await request(options)).pageContent;
-        const catalog = result.map(item => {
-            return {
-                name: item.shortDescription.value,
-                slug: item.itemId.itemCode
-            }
-        })
-
-        res.status(200).send(catalog)
-    } catch (e) {
-        res.status(500).send("error")
-        throw new Error(e);
-    }
-
-});
+    const result = JSON.parse(await request(options)).pageContent;
+    return result;
+}
 
 //submits problem
 app.post("/problem", async (req, res) => {
@@ -132,7 +135,7 @@ app.post("/problem", async (req, res) => {
             if (val.length > 512) {
                 val = val.substring(0, 512);
             }
-            const existingAttribute = dyn.attributes.find(d => d.key == key)
+            const existingAttribute = dyn.attributes.find(d => d.key == key) ?? null;
             if (existingAttribute) {
                 existingAttribute.value = val;
             } else {
@@ -148,9 +151,9 @@ app.post("/problem", async (req, res) => {
             return dyn;
         }
 
-        let brokenAttribute = dynamicAttributes[0];
+        let brokenAttribute = { type: "String", attributes: [] };
         brokenAttribute = updateDynamicAttribute(brokenAttribute, "brokenDate", new Date().toString());
-        brokenAttribute = updateDynamicAttribute(brokenAttribute, "broken", true);
+        brokenAttribute = updateDynamicAttribute(brokenAttribute, "brokenStatus", "broken");
         brokenAttribute = updateDynamicAttribute(brokenAttribute, "brokenDescription", description);
         brokenAttribute = updateDynamicAttribute(brokenAttribute, "brokenStoreId", storeId);
         brokenAttribute = updateDynamicAttribute(brokenAttribute, "brokenEmail", email);
@@ -158,7 +161,7 @@ app.post("/problem", async (req, res) => {
         let newBody = {
             ...response,
             version: ++version,
-            dynamicAttributes: [brokenAttribute]
+            dynamicAttributes: [...dynamicAttributes, brokenAttribute]
         }
 
         // same path as last time, just a PUT request with body
@@ -184,16 +187,96 @@ app.post("/problem", async (req, res) => {
 });
 
 app.get("/history", async (req, res) => {
-    const { body } = req;
-    let historyList = [{
-        problem: "problems with product",
-        locationId: "1234567",
-        catalogId: "1234567",
-        itemId: "1234567",
-        description: "1234567"
-    }]
+    const catalog = await getCatalogItems();
 
-    const path = '/items'
+    let detailedCatalog = await Promise.all(catalog.map(async item => {
+        const id = item.itemId.itemCode;
+
+        // get catalog item with that ID
+        const path = '/catalog/v2/items/' + id
+        var options = {
+            'method': 'GET',
+            'url': 'https://api.ncr.com' + path,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Authorization': getAccessKey(path, 'GET'),
+                'nep-organization': 'test-drive-890477f1b75e491b910d3',
+                'Date': dateString()
+            },
+        };
+
+        const result = JSON.parse(await request(options));
+        return result
+    }));
+
+    // filter each catalogItem that has 
+    const filteredCatalog = detailedCatalog.filter(item => {
+        return item.dynamicAttributes.some(dynAttr => {
+            // checks if any attribute has a key of "brokenStatus"
+            const attributes = dynamicAttributeToObject(dynAttr.attributes);
+            return Object.keys(attributes).includes("brokenStatus");
+        });
+    });
+    console.log(filteredCatalog.map(item => item.itemId.itemCode));
+
+    let problemHistory = [];
+    filteredCatalog.forEach(item => {
+        item.dynamicAttributes.forEach((dynAttr, i) => {
+            const attributes = dynamicAttributeToObject(dynAttr.attributes);
+            if (Object.keys(attributes).includes("brokenStatus")) {
+                console.log(item.shortDescription);
+                problemHistory.push({
+                    storeId: attributes.brokenStoreId,
+                    itemCode: item.itemId.itemCode,
+                    reportIndex: i,
+                    itemName: (item.shortDescription.values.find(a => a.locale == "en-US") || item.shortDescription.values[0]).value,
+                    email: attributes.brokenEmail,
+                    date: attributes.brokenDate,
+                    status: attributes.brokenStatus,
+                    description: attributes.brokenDescription
+                });
+            }
+            // console.log(attributes);
+        });
+    });
+
+    problemHistory = await Promise.all(
+        problemHistory.map(async problem => {
+            const path = '/site/sites/' + problem.storeId;
+
+            var options = {
+                'method': 'GET',
+                'url': 'https://api.ncr.com' + path,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Authorization': getAccessKey(path, 'GET'),
+                    'nep-organization': 'test-drive-890477f1b75e491b910d3',
+                    'Date': dateString()
+                },
+            };
+
+            const siteInfo = JSON.parse(await request(options));
+            const { street, city, state, postalCode } = siteInfo.address;
+
+            return {
+                ...problem,
+                siteInfo: {
+                    address: `${street} ${city}, ${state} ${postalCode}`,
+                    coordinates: siteInfo.coordinates,
+                    name: siteInfo.siteName
+                }
+            }
+        })
+    );
+
+    res.status(200).json(problemHistory);
+})
+
+app.put('/update-status', async (req, res) => {
+    const { itemCode, reportIndex, newStatus } = req.body;
+
+    // get catalog item with that ID
+    const path = '/catalog/v2/items/' + itemCode
     var options = {
         'method': 'GET',
         'url': 'https://api.ncr.com' + path,
@@ -203,13 +286,39 @@ app.get("/history", async (req, res) => {
             'nep-organization': 'test-drive-890477f1b75e491b910d3',
             'Date': dateString()
         },
+    };
+
+    const response = JSON.parse(await request(options));
+    delete response.itemId;
+    delete response.auditTrail;
+    response.dynamicAttributes[reportIndex].attributes.find(attr => attr.key == "brokenStatus").value = newStatus;
+
+    let newBody = {
+        ...response,
+        version: ++response.version,
     }
-    const result = await request(options)
-    //submits history of problem to NCR API
 
-    //submit request to NCR API
+    // same path as last time, just a PUT request with body
+    var options = {
+        'method': 'PUT',
+        'url': 'https://api.ncr.com' + path,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Authorization': getAccessKey(path, 'PUT'),
+            'nep-organization': 'test-drive-890477f1b75e491b910d3',
+            'Date': dateString(),
+        },
+        body: JSON.stringify(newBody)
+    }
 
-    res.status(200).json(historyList);
-})
+    const putResponse = await request(options);
+    res.send("success");
+});
+
+const dynamicAttributeToObject = (dynAttr) => {
+    //dynAttributes should input the attributes field, which is an array
+    const entries = new Map(dynAttr.map(attr => [attr.key, attr.value]));
+    return Object.fromEntries(entries);
+};
 
 app.listen(5000)

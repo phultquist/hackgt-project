@@ -6,6 +6,7 @@ export default function Form({ onSubmit, stores, products }) {
     const [email, setEmail] = useState("");
     const [selectedSite, setSelectedSite] = useState({});
     const [selectedProduct, setSelectedProduct] = useState({});
+    console.log(products);
 
     return (
         <div className='pb-10'>
@@ -18,8 +19,8 @@ export default function Form({ onSubmit, stores, products }) {
                     onSubmit({
                         storeId: selectedSite.slug,
                         productId: selectedProduct.slug,
-                        description: description || "No Description",
-                        email: email || "No Email"
+                        description: description || "-",
+                        email: email || "-"
                     });
                 }
             }}>
