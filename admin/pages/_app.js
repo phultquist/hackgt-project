@@ -7,7 +7,7 @@ function MyApp({ Component, pageProps, router }) {
     <div className=''>
       <SideBar currentPage={router.pathname} />
     </div>
-    <div className='container p-10 overflow-scroll'>
+    <div className='container p-10 overflow-scroll max-h-screen'>
       < Component {...pageProps} />
     </div>
   </div>)

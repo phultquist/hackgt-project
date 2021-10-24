@@ -326,7 +326,10 @@
                 marker = new google.maps.Marker({
                     position,
                     map: map,
-                    icon: "./reddot.png"
+                    icon: "./reddot.png",
+                    options: {
+                        gestureHandling: 'greedy'
+                    }
                 });
 
                 positions.push(position);

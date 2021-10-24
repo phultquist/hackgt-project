@@ -358,4 +358,6 @@ const dynamicAttributeToObject = (dynAttr) => {
     return Object.fromEntries(entries);
 };
 
-app.listen(5000)
+app.listen(5000);
+
+module.exports = app;

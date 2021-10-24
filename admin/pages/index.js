@@ -12,7 +12,8 @@ export default function Home({ problemHistory }) {
         <meta name="description" content="Dashboard for managing errors" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1 className='text-3xl font-bold'>Good Days Cafe</h1>
+      <h1 className='text-3xl font-bold mb-4'>Reports</h1>
+      <p>Select a point to view more information</p>
       <iframe src={`/map/index.html?data=${problemString}`} className='m-4 w-full h-4/5'></iframe>
     </>
 
@@ -20,7 +21,7 @@ export default function Home({ problemHistory }) {
 }
 
 export async function getServerSideProps() {
-  const problemHistoryRes = await fetch(`http://localhost:5000/history`);
+  const problemHistoryRes = await fetch(`${process.env.SERVER_HOST}/history`);
   const problemHistory = await problemHistoryRes.json();
 
   return {

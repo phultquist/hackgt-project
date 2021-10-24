@@ -1,19 +1,58 @@
-import Head from 'next/head'
-import Image from 'next/image'
+import Form from '../components/Form'
+import PageWithHeader from '../components/PageWithHeader'
+import { useRouter } from 'next/router'
 
-export default function Home() {
-    return (
-        <div className="Landing-page bg-background-image min-h-screen flex flex-col justify-center">
-            {/* <div class="w-screen h-screen justify-center items-center"> */}
-            <div>
-                <h1 className=' text-white font-bold text-9xl w-min mx-auto py-2'> HackGT</h1>
-                <h3 className='text-white font-bold text-4xl w-min mx-auto py-2'> Someslogan </h3>
-                <div className='mx-auto flex justify-center py-5'>
-                    <a href="/report">
-                        <button className='bg-gray-700 text-white px-3 py-1.5 text-2xl rounded-xl '> Report </button>
-                    </a>
-                </div>
-            </div>
-        </div>
-    )
+export default function Home({ stores, catalog }) {
+  const router = useRouter();
+
+  return (
+    <PageWithHeader>
+      <div className='px-10'>
+        <h1 className="text-3xl font-extrabold pt-6 pb-2">
+          Creator Restaurants
+        </h1>
+        <p>
+          We’re sorry to hear something went wrong. Help us fix it by filing a report.
+        </p>
+        <Form
+          stores={stores}
+          products={catalog}
+          onSubmit={async (data) => {
+            console.log("hellO!");
+            console.log(data);
+            try {
+              const res = await fetch(
+                `${process.env.SERVER_HOST}/problem`,
+                {
+                  body: JSON.stringify(data),
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  method: 'POST'
+                }
+              )
+              router.push('/thanks');
+            } catch(e) {
+              console.log(e);
+              alert("Something went wrong")
+            }
+          }}
+        />
+      </div>
+    </PageWithHeader>
+  )
+}
+
+
+export async function getServerSideProps() {
+  console.log(process.env);
+  const [locationRes, catalogRes] = await Promise.all([fetch(`${process.env.SERVER_HOST}/locations`), fetch(`${process.env.SERVER_HOST}/catalog`)]);
+  const [locationData, catalogData] = await Promise.all([locationRes.json(), catalogRes.json()]);
+
+  return {
+    props: {
+      stores: locationData,
+      catalog: catalogData
+    }
+  }
 }
