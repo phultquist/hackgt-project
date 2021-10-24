@@ -4,7 +4,6 @@ import Image from 'next/image'
 export default function Home() {
     return (
         <div className="Landing-page bg-background-image min-h-screen flex flex-col justify-center">
-            {/* <div class="w-screen h-screen justify-center items-center"> */}
             <div>
                 <h1 className=' text-white font-bold text-9xl w-min mx-auto py-2'> HackGT</h1>
                 <h3 className='text-white font-bold text-4xl w-min mx-auto py-2'> Someslogan </h3>
