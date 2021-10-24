@@ -19,8 +19,9 @@
     <script>
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
+        const { data } = params;
         // alert(JSON.parse(params))
-        alert(params.name)
+        // alert(params.name)
         function initMap() {
 
             var locations = [
@@ -369,7 +370,7 @@
 
     </script>
     <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsVRp045clIrdhnRmK7qmdXB2mUe4uu8Y&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0-Xu29kgRLzq8oinEIbWE8u6eK7JNY50&callback=initMap">
         </script>
 </body>
 
