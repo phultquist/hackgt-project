@@ -75,7 +75,7 @@ const SideBar = ({ currentPage }) => {
                                         <img class="inline-block rounded-full h-9 w-9" src="/profile.png" alt="" />
                                     </div>
                                     <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-900">Good Days Cafe</p>
+                                        <p class="text-sm font-medium text-gray-900">Creator Restaurants</p>
                                     </div>
                                 </div>
                             </a>

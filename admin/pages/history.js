@@ -85,7 +85,7 @@ function Row({ problem }) {
                     setStatus(newStatus);
                     try {
                         fetch(
-                            'http://localhost:5000/update-status',
+                            `${process.env.SERVER_HOST}/update-status`,
                             {
                                 body: JSON.stringify({
                                     itemCode: problem.itemCode,
@@ -144,7 +144,7 @@ function Tag({ status, onClick }) {
 }
 
 export async function getServerSideProps() {
-    const problemHistoryRes = await fetch(`http://localhost:5000/history`);
+    const problemHistoryRes = await fetch(`${process.env.SERVER_HOST}/history`);
     const problemHistory = await problemHistoryRes.json();
 
     return {
