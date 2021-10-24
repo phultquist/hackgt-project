@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=0.0">
     <title>Google Map</title>
+    <!-- <p id="info"></p> -->
     <style>
         #map {
             height: 100vh;
@@ -19,37 +20,10 @@
     <script>
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
-        const { data } = params;
-        // alert(JSON.parse(params))
-        // alert(params.name)
+        const data = JSON.parse(params.data);
+        // document.getElementById("info").innerHTML = data
         function initMap() {
-
-            var locations = [
-                {
-                    name: "Title A",
-                    lat: 3.200848,
-                    long: 101.616669,
-                    address: "517 Hawthorne Ave Bartlett IL 60103",
-                    id: "123456",
-                    date: "123456"
-                },
-                {
-                    name: "Title A",
-                    lat: 3.180967,
-                    long: 101.715546,
-                    address: "517 Hawthorne Ave Bartlett IL 60103",
-                    id: "123456",
-                    date: "123456"
-                },
-                {
-                    name: "Title A",
-                    lat: 31.180967,
-                    long: 101.715546,
-                    address: "517 Hawthorne Ave Bartlett IL 60103",
-                    id: "123456",
-                    date: "123456"
-                }
-            ];
+            var locations = data;
 
             var map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 12,
@@ -348,7 +322,7 @@
 
             let positions = [];
             for (i = 0; i < locations.length; i++) {
-                let position = new google.maps.LatLng(locations[i].lat, locations[i].long)
+                let position = new google.maps.LatLng(locations[i].siteInfo.coordinates.latitude, locations[i].siteInfo.coordinates.longitude)
                 marker = new google.maps.Marker({
                     position,
                     map: map,
@@ -358,7 +332,12 @@
                 positions.push(position);
                 google.maps.event.addListener(marker, 'click', (function (marker, i) {
                     return function () {
-                        infowindow.setContent(`<h3>${locations[i].name}</h3><p>${locations[i].address}</p><p>${locations[i].id}</p><p>${locations[i].date}</p>`);
+                        infowindow.setContent(`
+                        <b>${locations[i].itemName}</b>
+                        <p>${locations[i].siteInfo.name}</p>
+                        <p>${locations[i].siteInfo.address}</p>
+                        <p style="color: gray; font-size:8px">${locations[i].date}</p>
+                        `);
                         infowindow.open(map, marker);
                     }
                 })(marker, i));
