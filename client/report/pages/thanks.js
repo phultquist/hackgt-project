@@ -6,7 +6,7 @@ export default function Home() {
     <PageWithHeader>
       <div className='px-10'>
         <h1 className="text-3xl font-extrabold pt-6 pb-2">
-          Good Creator Restaurants
+          Creator Restaurants
         </h1>
         <p>
         Thank you for reporting this issue. If you provided your email, we will reach out to you soon to help refund your order. The site should be fixed soon. 
