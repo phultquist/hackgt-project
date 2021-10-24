@@ -269,7 +269,9 @@ app.get("/history", async (req, res) => {
         })
     );
 
-    res.status(200).json(problemHistory);
+    res.status(200).json(problemHistory.sort((a,b) => {
+        return new Date(a).getTime() - new Date(b).getTime();
+    }));
 })
 
 app.put('/update-status', async (req, res) => {
