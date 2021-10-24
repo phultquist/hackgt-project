@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Link from 'next/Link'
 
 export default function Form({ onSubmit, stores, products }) {
     const [description, setDescription] = useState("");
