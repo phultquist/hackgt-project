@@ -22,7 +22,7 @@ export default function Home({ stores, catalog }) {
             console.log(data);
             try {
               const res = await fetch(
-                `https://hackgt-project-330002.wl.r.appspot.com/`,
+                `https://hackgt-project-330002.wl.r.appspot.com/problem/`,
                 {
                   body: JSON.stringify(data),
                   headers: {
