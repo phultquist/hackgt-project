@@ -136,7 +136,7 @@ app.post("/problem", async (req, res) => {
             if (val.length > 512) {
                 val = val.substring(0, 512);
             }
-            const existingAttribute = dyn.attributes.find(d => d.key == key) ?? null;
+            const existingAttribute = dyn.attributes.find(d => d.key == key) || null;
             if (existingAttribute) {
                 existingAttribute.value = val;
             } else {
@@ -243,6 +243,7 @@ app.get("/history", async (req, res) => {
         const result = JSON.parse(await request(options));
         return result
     }));
+    console.log('detailedCatalog complete');
 
     // filter each catalogItem that has 
     const filteredCatalog = detailedCatalog.filter(item => {
@@ -259,7 +260,7 @@ app.get("/history", async (req, res) => {
         item.dynamicAttributes.forEach((dynAttr, i) => {
             const attributes = dynamicAttributeToObject(dynAttr.attributes);
             if (Object.keys(attributes).includes("brokenStatus")) {
-                console.log(item.shortDescription);
+                // console.log(item.shortDescription);
                 problemHistory.push({
                     storeId: attributes.brokenStoreId,
                     itemCode: item.itemId.itemCode,
@@ -275,6 +276,8 @@ app.get("/history", async (req, res) => {
         });
     });
 
+    console.log(problemHistory);
+
     problemHistory = await Promise.all(
         problemHistory.map(async problem => {
             const path = '/site/sites/' + problem.storeId;
@@ -289,22 +292,25 @@ app.get("/history", async (req, res) => {
                     'Date': dateString()
                 },
             };
+            try {
+                const siteInfo = JSON.parse(await request(options));
+                const { street, city, state, postalCode } = siteInfo.address;
 
-            const siteInfo = JSON.parse(await request(options));
-            const { street, city, state, postalCode } = siteInfo.address;
-
-            return {
-                ...problem,
-                siteInfo: {
-                    address: `${street} ${city}, ${state} ${postalCode}`,
-                    coordinates: siteInfo.coordinates,
-                    name: siteInfo.siteName
+                return {
+                    ...problem,
+                    siteInfo: {
+                        address: `${street} ${city}, ${state} ${postalCode}`,
+                        coordinates: siteInfo.coordinates,
+                        name: siteInfo.siteName
+                    }
                 }
+            } catch(e) {
+                return null
             }
         })
     );
 
-    res.status(200).json(problemHistory.sort((a, b) => {
+    res.status(200).json(problemHistory.filter(a => a !== null).sort((a, b) => {
         return new Date(a).getTime() - new Date(b).getTime();
     }));
 })
@@ -358,6 +364,4 @@ const dynamicAttributeToObject = (dynAttr) => {
     return Object.fromEntries(entries);
 };
 
-app.listen(5000);
-
-module.exports = app;
+app.listen(8080);

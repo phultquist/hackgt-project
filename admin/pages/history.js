@@ -50,7 +50,7 @@ export default function History({ problemHistory }) {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {problemHistory.map((problem) => <Row problem={problem} />)}
+                                    {problemHistory.map((problem) => <Row problem={problem} key={problem.itemCode + problem.reportIndex} />)}
                                 </tbody>
                             </table>
                         </div>

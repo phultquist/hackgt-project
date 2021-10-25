@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js'
 import dotenv from 'dotenv'
 
-const env = dotenv.config();
+dotenv.config();
 
 const bspSharedKey = '2e1f6f77e9674006838270fcb95477f7';
 const bspOrganization = 'test-drive-890477f1b75e491b910d3';
